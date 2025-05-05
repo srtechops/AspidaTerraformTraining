@@ -6,5 +6,5 @@ resource "aws_vpc" "multi_tier_project" {
     Name = "multi_tier_project"
   }
   enable_dns_hostnames = true
-  enable_dns_support = true
+  enable_dns_support   = true
 }

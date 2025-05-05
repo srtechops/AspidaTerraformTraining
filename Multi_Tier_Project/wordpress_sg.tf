@@ -35,7 +35,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4_wordpress_
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
   tags = {
-    Name ="allow_all_traffic_ipv4_wordpress_outbound"
+    Name = "allow_all_traffic_ipv4_wordpress_outbound"
   }
 }
 

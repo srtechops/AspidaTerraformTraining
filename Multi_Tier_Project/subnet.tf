@@ -5,7 +5,7 @@ resource "aws_subnet" "public_subnet_1a" {
   tags = {
     Name = "public_subnet_1a"
   }
-  availability_zone = "ap-south-1a"
+  availability_zone       = "ap-south-1a"
   map_public_ip_on_launch = true
 }
 
@@ -16,7 +16,7 @@ resource "aws_subnet" "public_subnet_1b" {
   tags = {
     Name = "public_subnet_1a"
   }
-  availability_zone = "ap-south-1b"
+  availability_zone       = "ap-south-1b"
   map_public_ip_on_launch = true
 }
 
@@ -28,7 +28,7 @@ resource "aws_subnet" "private_subnet_1a" {
   tags = {
     Name = "private_subnet_1a"
   }
- availability_zone = "ap-south-1a"
+  availability_zone = "ap-south-1a"
 }
 
 resource "aws_subnet" "private_subnet_1b" {
@@ -38,5 +38,5 @@ resource "aws_subnet" "private_subnet_1b" {
   tags = {
     Name = "private_subnet_1a"
   }
- availability_zone = "ap-south-1b"
+  availability_zone = "ap-south-1b"
 }
