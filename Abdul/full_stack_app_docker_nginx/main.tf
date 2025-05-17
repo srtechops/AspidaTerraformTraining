@@ -75,29 +75,6 @@ resource "aws_security_group" "allow_http" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-resource "aws_security_group" "allow_server" {
-  tags = {
-    Name = "allow_server"
-  }
-    description = "server SG"
-  vpc_id = aws_vpc.my_vpc.id
-
-  ingress {
-    description = "Inbound Rule"
-    from_port = 3000
-    to_port = 3000
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    description = "Outbound Rule"
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
 
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
@@ -127,7 +104,7 @@ resource "aws_instance" "my_instance" {
     instance_type = "t2.micro"
     key_name = "TerraformTrainingKey"
     subnet_id = aws_subnet.my_vpc_subnet.id
-    security_groups = [aws_security_group.allow_ssh.id, aws_security_group.allow_http.id, aws_security_group.allow_server.id]
+    security_groups = [aws_security_group.allow_ssh.id, aws_security_group.allow_http.id]
     
 }
 
@@ -142,11 +119,9 @@ resource "null_resource" "my_null_resource" {
 
     provisioner "remote-exec" {
       inline = [ 
+        "echo \"⚡️ Installing GIT ...\"",
         "sudo yum install git -y",
-        "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash",
-        "source ~/.bashrc",
-        "nvm install --lts",
-        "node -e \"console.log('Running Node.js ' + process.version)\"",
+        "echo \"⚡️ Copying GH Key ...\"",
         "mkdir /home/ec2-user/keys",
        ]
     }
@@ -165,22 +140,25 @@ resource "null_resource" "my_null_resource" {
         "ssh-keyscan github.com >> ~/.ssh/known_hosts",
         "mkdir -p /home/ec2-user/app",
         "cd /home/ec2-user/app",
+        "echo \"⚡️ Cloning GH Repos ...\"",
         "git clone git@github.com:mohaimin95/ui-terraform-training.git",
-        "cd ui-terraform-training",
-        "npm install",
-        "npm run build",
-        "sudo yum install -y httpd",
-        "sudo cp -r dist/* /var/www/html/",
-        "sudo chown -R apache:apache /var/www/html/",
-        "sudo chmod -R 755 /var/www/html/",
-        "sudo systemctl enable httpd",
-        "sudo systemctl start httpd",
-        "cd /home/ec2-user/app",
         "git clone git@github.com:mohaimin95/server-terraform-training.git",
-        "cd server-terraform-training",
-        "npm install",
-        "npm run build",
-        "npx -y pm2 start dist/index.js",
+        "git clone git@github.com:mohaimin95/docker-terraform-training.git",
+        "sudo yum update -y",
+        "echo \"⚡️ Installing Docker ...\"",
+        "sudo amazon-linux-extras enable docker",
+        "sudo yum install -y docker",
+        "sudo systemctl start docker",
+        "sudo systemctl enable docker",
+        "sudo usermod -aG docker ec2-user",
+        "echo \"⚡️ Installing Docker Compose ...\"",
+        "sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose",
+        "sudo chmod +x /usr/local/bin/docker-compose",
+        "cd /home/ec2-user/app/docker-terraform-training",
+        "export PORT=80",
+        "echo \"⚡️ Building ...\"",
+        "sudo docker-compose up --build -d",
+        "echo \"✅ DONE ...\"",
        ]
     }
 }
